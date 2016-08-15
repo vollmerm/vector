@@ -44,11 +44,11 @@ module Data.Vector (
 
   -- ** Monadic indexing
   indexM, headM, lastM,
-  unsafeIndexM, unsafeHeadM, unsafeLastM,
+--  unsafeIndexM, unsafeHeadM, unsafeLastM,
 
   -- ** Extracting subvectors (slicing)
   slice, init, tail, take, drop, splitAt,
-  unsafeSlice, unsafeInit, unsafeTail, unsafeTake, unsafeDrop,
+--  unsafeSlice, unsafeInit, unsafeTail, unsafeTake, unsafeDrop,
 
   -- * Construction
 
@@ -76,14 +76,15 @@ module Data.Vector (
 
   -- ** Bulk updates
   (//), update, update_,
-  unsafeUpd, unsafeUpdate, unsafeUpdate_,
+--  unsafeUpd, unsafeUpdate, unsafeUpdate_,
 
   -- ** Accumulations
   accum, accumulate, accumulate_,
-  unsafeAccum, unsafeAccumulate, unsafeAccumulate_,
+--  unsafeAccum, unsafeAccumulate, unsafeAccumulate_,
 
   -- ** Permutations
-  reverse, backpermute, unsafeBackpermute,
+  reverse, backpermute,
+--  unsafeBackpermute,
 
   -- ** Safe destructive updates
   modify,
@@ -161,7 +162,8 @@ module Data.Vector (
   G.convert,
 
   -- ** Mutable vectors
-  freeze, thaw, copy, unsafeFreeze, unsafeThaw, unsafeCopy
+  freeze, thaw, copy,
+--  unsafeFreeze, unsafeThaw, unsafeCopy
 ) where
 
 import qualified Data.Vector.Generic as G
@@ -598,7 +600,7 @@ unsafeDrop :: Int -> Vector a -> Vector a
 unsafeDrop = G.unsafeDrop
 
 -- Initialisation
--- --------------
+-- --------------e
 
 -- | /O(1)/ Empty vector
 empty :: Vector a
