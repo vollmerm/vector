@@ -6,7 +6,7 @@
            , Rank2Types
            , BangPatterns
   #-}
-
+{-# LANGUAGE Trustworthy #-} -- LIES
 -- |
 -- Module      : Data.Vector
 -- Copyright   : (c) Roman Leshchinskiy 2008-2010
