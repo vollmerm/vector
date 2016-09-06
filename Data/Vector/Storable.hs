@@ -23,15 +23,12 @@ module Data.Vector.Storable (
 
   -- ** Indexing
   (!), (!?), head, last,
-  unsafeIndex, unsafeHead, unsafeLast,
 
   -- ** Monadic indexing
   indexM, headM, lastM,
-  unsafeIndexM, unsafeHeadM, unsafeLastM,
 
   -- ** Extracting subvectors (slicing)
   slice, init, tail, take, drop, splitAt,
-  unsafeSlice, unsafeInit, unsafeTail, unsafeTake, unsafeDrop,
 
   -- * Construction
 
@@ -59,14 +56,12 @@ module Data.Vector.Storable (
 
   -- ** Bulk updates
   (//), update_,
-  unsafeUpd, unsafeUpdate_,
 
   -- ** Accumulations
   accum, accumulate_,
-  unsafeAccum, unsafeAccumulate_,
 
   -- ** Permutations
-  reverse, backpermute, unsafeBackpermute,
+  reverse, backpermute, 
 
   -- ** Safe destructive updates
   modify,
@@ -128,15 +123,11 @@ module Data.Vector.Storable (
   toList, fromList, fromListN,
 
   -- ** Other vector types
-  G.convert, unsafeCast,
+  G.convert,
 
   -- ** Mutable vectors
-  freeze, thaw, copy, unsafeFreeze, unsafeThaw, unsafeCopy,
+  freeze, thaw, copy
 
-  -- * Raw pointers
-  unsafeFromForeignPtr, unsafeFromForeignPtr0,
-  unsafeToForeignPtr,   unsafeToForeignPtr0,
-  unsafeWith
 ) where
 
 import qualified Data.Vector.Generic          as G
@@ -327,20 +318,6 @@ last :: Storable a => Vector a -> a
 {-# INLINE last #-}
 last = G.last
 
--- | /O(1)/ Unsafe indexing without bounds checking
-unsafeIndex :: Storable a => Vector a -> Int -> a
-{-# INLINE unsafeIndex #-}
-unsafeIndex = G.unsafeIndex
-
--- | /O(1)/ First element without checking if the vector is empty
-unsafeHead :: Storable a => Vector a -> a
-{-# INLINE unsafeHead #-}
-unsafeHead = G.unsafeHead
-
--- | /O(1)/ Last element without checking if the vector is empty
-unsafeLast :: Storable a => Vector a -> a
-{-# INLINE unsafeLast #-}
-unsafeLast = G.unsafeLast
 
 -- Monadic indexing
 -- ----------------
@@ -380,23 +357,6 @@ lastM :: (Storable a, Monad m) => Vector a -> m a
 {-# INLINE lastM #-}
 lastM = G.lastM
 
--- | /O(1)/ Indexing in a monad without bounds checks. See 'indexM' for an
--- explanation of why this is useful.
-unsafeIndexM :: (Storable a, Monad m) => Vector a -> Int -> m a
-{-# INLINE unsafeIndexM #-}
-unsafeIndexM = G.unsafeIndexM
-
--- | /O(1)/ First element in a monad without checking for empty vectors.
--- See 'indexM' for an explanation of why this is useful.
-unsafeHeadM :: (Storable a, Monad m) => Vector a -> m a
-{-# INLINE unsafeHeadM #-}
-unsafeHeadM = G.unsafeHeadM
-
--- | /O(1)/ Last element in a monad without checking for empty vectors.
--- See 'indexM' for an explanation of why this is useful.
-unsafeLastM :: (Storable a, Monad m) => Vector a -> m a
-{-# INLINE unsafeLastM #-}
-unsafeLastM = G.unsafeLastM
 
 -- Extracting subvectors (slicing)
 -- -------------------------------
@@ -443,38 +403,6 @@ drop = G.drop
 splitAt :: Storable a => Int -> Vector a -> (Vector a, Vector a)
 splitAt = G.splitAt
 
--- | /O(1)/ Yield a slice of the vector without copying. The vector must
--- contain at least @i+n@ elements but this is not checked.
-unsafeSlice :: Storable a => Int   -- ^ @i@ starting index
-                       -> Int   -- ^ @n@ length
-                       -> Vector a
-                       -> Vector a
-{-# INLINE unsafeSlice #-}
-unsafeSlice = G.unsafeSlice
-
--- | /O(1)/ Yield all but the last element without copying. The vector may not
--- be empty but this is not checked.
-unsafeInit :: Storable a => Vector a -> Vector a
-{-# INLINE unsafeInit #-}
-unsafeInit = G.unsafeInit
-
--- | /O(1)/ Yield all but the first element without copying. The vector may not
--- be empty but this is not checked.
-unsafeTail :: Storable a => Vector a -> Vector a
-{-# INLINE unsafeTail #-}
-unsafeTail = G.unsafeTail
-
--- | /O(1)/ Yield the first @n@ elements without copying. The vector must
--- contain at least @n@ elements but this is not checked.
-unsafeTake :: Storable a => Int -> Vector a -> Vector a
-{-# INLINE unsafeTake #-}
-unsafeTake = G.unsafeTake
-
--- | /O(1)/ Yield all but the first @n@ elements without copying. The vector
--- must contain at least @n@ elements but this is not checked.
-unsafeDrop :: Storable a => Int -> Vector a -> Vector a
-{-# INLINE unsafeDrop #-}
-unsafeDrop = G.unsafeDrop
 
 -- Initialisation
 -- --------------
@@ -701,15 +629,6 @@ update_ :: Storable a
 {-# INLINE update_ #-}
 update_ = G.update_
 
--- | Same as ('//') but without bounds checking.
-unsafeUpd :: Storable a => Vector a -> [(Int, a)] -> Vector a
-{-# INLINE unsafeUpd #-}
-unsafeUpd = G.unsafeUpd
-
--- | Same as 'update_' but without bounds checking.
-unsafeUpdate_ :: Storable a => Vector a -> Vector Int -> Vector a -> Vector a
-{-# INLINE unsafeUpdate_ #-}
-unsafeUpdate_ = G.unsafeUpdate_
 
 -- Accumulations
 -- -------------
@@ -742,16 +661,6 @@ accumulate_ :: (Storable a, Storable b)
 {-# INLINE accumulate_ #-}
 accumulate_ = G.accumulate_
 
--- | Same as 'accum' but without bounds checking.
-unsafeAccum :: Storable a => (a -> b -> a) -> Vector a -> [(Int,b)] -> Vector a
-{-# INLINE unsafeAccum #-}
-unsafeAccum = G.unsafeAccum
-
--- | Same as 'accumulate_' but without bounds checking.
-unsafeAccumulate_ :: (Storable a, Storable b) =>
-               (a -> b -> a) -> Vector a -> Vector Int -> Vector b -> Vector a
-{-# INLINE unsafeAccumulate_ #-}
-unsafeAccumulate_ = G.unsafeAccumulate_
 
 -- Permutations
 -- ------------
@@ -770,10 +679,6 @@ backpermute :: Storable a => Vector a -> Vector Int -> Vector a
 {-# INLINE backpermute #-}
 backpermute = G.backpermute
 
--- | Same as 'backpermute' but without bounds checking.
-unsafeBackpermute :: Storable a => Vector a -> Vector Int -> Vector a
-{-# INLINE unsafeBackpermute #-}
-unsafeBackpermute = G.unsafeBackpermute
 
 -- Safe destructive updates
 -- ------------------------
@@ -1374,39 +1279,10 @@ fromListN :: Storable a => Int -> [a] -> Vector a
 {-# INLINE fromListN #-}
 fromListN = G.fromListN
 
--- Conversions - Unsafe casts
--- --------------------------
-
--- | /O(1)/ Unsafely cast a vector from one element type to another.
--- The operation just changes the type of the underlying pointer and does not
--- modify the elements.
---
--- The resulting vector contains as many elements as can fit into the
--- underlying memory block.
---
-unsafeCast :: forall a b. (Storable a, Storable b) => Vector a -> Vector b
-{-# INLINE unsafeCast #-}
-unsafeCast (Vector n fp)
-  = Vector ((n * sizeOf (undefined :: a)) `div` sizeOf (undefined :: b))
-           (castForeignPtr fp)
-
 
 -- Conversions - Mutable vectors
 -- -----------------------------
 
--- | /O(1)/ Unsafe convert a mutable vector to an immutable one without
--- copying. The mutable vector may not be used after this operation.
-unsafeFreeze
-        :: (Storable a, PrimMonad m) => MVector (PrimState m) a -> m (Vector a)
-{-# INLINE unsafeFreeze #-}
-unsafeFreeze = G.unsafeFreeze
-
--- | /O(1)/ Unsafely convert an immutable vector to a mutable one without
--- copying. The immutable vector may not be used after this operation.
-unsafeThaw
-        :: (Storable a, PrimMonad m) => Vector a -> m (MVector (PrimState m) a)
-{-# INLINE unsafeThaw #-}
-unsafeThaw = G.unsafeThaw
 
 -- | /O(n)/ Yield a mutable copy of the immutable vector.
 thaw :: (Storable a, PrimMonad m) => Vector a -> m (MVector (PrimState m) a)
@@ -1418,12 +1294,6 @@ freeze :: (Storable a, PrimMonad m) => MVector (PrimState m) a -> m (Vector a)
 {-# INLINE freeze #-}
 freeze = G.freeze
 
--- | /O(n)/ Copy an immutable vector into a mutable one. The two vectors must
--- have the same length. This is not checked.
-unsafeCopy
-  :: (Storable a, PrimMonad m) => MVector (PrimState m) a -> Vector a -> m ()
-{-# INLINE unsafeCopy #-}
-unsafeCopy = G.unsafeCopy
 
 -- | /O(n)/ Copy an immutable vector into a mutable one. The two vectors must
 -- have the same length.
@@ -1431,59 +1301,3 @@ copy :: (Storable a, PrimMonad m) => MVector (PrimState m) a -> Vector a -> m ()
 {-# INLINE copy #-}
 copy = G.copy
 
--- Conversions - Raw pointers
--- --------------------------
-
--- | /O(1)/ Create a vector from a 'ForeignPtr' with an offset and a length.
---
--- The data may not be modified through the 'ForeignPtr' afterwards.
---
--- If your offset is 0 it is more efficient to use 'unsafeFromForeignPtr0'.
-unsafeFromForeignPtr :: Storable a
-                     => ForeignPtr a    -- ^ pointer
-                     -> Int             -- ^ offset
-                     -> Int             -- ^ length
-                     -> Vector a
-{-# INLINE_FUSED unsafeFromForeignPtr #-}
-unsafeFromForeignPtr fp i n = unsafeFromForeignPtr0 fp' n
-    where
-      fp' = updPtr (`advancePtr` i) fp
-
-{-# RULES
-"unsafeFromForeignPtr fp 0 n -> unsafeFromForeignPtr0 fp n " forall fp n.
-  unsafeFromForeignPtr fp 0 n = unsafeFromForeignPtr0 fp n   #-}
-
-
--- | /O(1)/ Create a vector from a 'ForeignPtr' and a length.
---
--- It is assumed the pointer points directly to the data (no offset).
--- Use `unsafeFromForeignPtr` if you need to specify an offset.
---
--- The data may not be modified through the 'ForeignPtr' afterwards.
-unsafeFromForeignPtr0 :: Storable a
-                      => ForeignPtr a    -- ^ pointer
-                      -> Int             -- ^ length
-                      -> Vector a
-{-# INLINE unsafeFromForeignPtr0 #-}
-unsafeFromForeignPtr0 fp n = Vector n fp
-
--- | /O(1)/ Yield the underlying 'ForeignPtr' together with the offset to the
--- data and its length. The data may not be modified through the 'ForeignPtr'.
-unsafeToForeignPtr :: Storable a => Vector a -> (ForeignPtr a, Int, Int)
-{-# INLINE unsafeToForeignPtr #-}
-unsafeToForeignPtr (Vector n fp) = (fp, 0, n)
-
--- | /O(1)/ Yield the underlying 'ForeignPtr' together with its length.
---
--- You can assume the pointer points directly to the data (no offset).
---
--- The data may not be modified through the 'ForeignPtr'.
-unsafeToForeignPtr0 :: Storable a => Vector a -> (ForeignPtr a, Int)
-{-# INLINE unsafeToForeignPtr0 #-}
-unsafeToForeignPtr0 (Vector n fp) = (fp, n)
-
--- | Pass a pointer to the vector's data to the IO action. The data may not be
--- modified through the 'Ptr.
-unsafeWith :: Storable a => Vector a -> (Ptr a -> IO b) -> IO b
-{-# INLINE unsafeWith #-}
-unsafeWith (Vector _ fp) = withForeignPtr fp

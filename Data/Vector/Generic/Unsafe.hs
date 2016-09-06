@@ -1,8 +1,7 @@
 {-# LANGUAGE CPP, Rank2Types, MultiParamTypeClasses, FlexibleContexts,
              TypeFamilies, ScopedTypeVariables, BangPatterns #-}
-{-# LANGUAGE Trustworthy #-}
 -- |
--- Module      : Data.Vector.Generic
+-- Module      : Data.Vector.Generic.Unsafe
 -- Copyright   : (c) Roman Leshchinskiy 2008-2010
 -- License     : BSD-style
 --
@@ -13,7 +12,7 @@
 -- Generic interface to pure vectors.
 --
 
-module Data.Vector.Generic (
+module Data.Vector.Generic.Unsafe (
   -- * Immutable vectors
   Vector(..), Mutable,
 
@@ -24,12 +23,15 @@ module Data.Vector.Generic (
 
   -- ** Indexing
   (!), (!?), head, last,
+  unsafeIndex, unsafeHead, unsafeLast,
 
   -- ** Monadic indexing
   indexM, headM, lastM,
+  unsafeIndexM, unsafeHeadM, unsafeLastM,
 
   -- ** Extracting subvectors (slicing)
   slice, init, tail, take, drop, splitAt,
+  unsafeSlice, unsafeInit, unsafeTail, unsafeTake, unsafeDrop,
 
   -- * Construction
 
@@ -57,12 +59,14 @@ module Data.Vector.Generic (
 
   -- ** Bulk updates
   (//), update, update_,
+  unsafeUpd, unsafeUpdate, unsafeUpdate_,
 
   -- ** Accumulations
   accum, accumulate, accumulate_,
+  unsafeAccum, unsafeAccumulate, unsafeAccumulate_,
 
   -- ** Permutations
-  reverse, backpermute, 
+  reverse, backpermute, unsafeBackpermute,
 
   -- ** Safe destructive updates
   modify,
@@ -140,7 +144,7 @@ module Data.Vector.Generic (
   convert,
 
   -- ** Mutable vectors
-  freeze, thaw, copy, 
+  freeze, thaw, copy, unsafeFreeze, unsafeThaw, unsafeCopy,
 
   -- * Fusion support
 

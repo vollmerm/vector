@@ -130,6 +130,7 @@ Library
         Data.Vector.Generic.Base
         Data.Vector.Generic.New
         Data.Vector.Generic
+        Data.Vector.Generic.Unsafe
 
         Data.Vector.Primitive.Mutable
         Data.Vector.Primitive

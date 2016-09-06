@@ -26,15 +26,12 @@ module Data.Vector.Primitive (
 
   -- ** Indexing
   (!), (!?), head, last,
-  unsafeIndex, unsafeHead, unsafeLast,
 
   -- ** Monadic indexing
   indexM, headM, lastM,
-  unsafeIndexM, unsafeHeadM, unsafeLastM,
 
   -- ** Extracting subvectors (slicing)
   slice, init, tail, take, drop, splitAt,
-  unsafeSlice, unsafeInit, unsafeTail, unsafeTake, unsafeDrop,
 
   -- * Construction
 
@@ -62,14 +59,12 @@ module Data.Vector.Primitive (
 
   -- ** Bulk updates
   (//), update_,
-  unsafeUpd, unsafeUpdate_,
 
   -- ** Accumulations
   accum, accumulate_,
-  unsafeAccum, unsafeAccumulate_,
 
   -- ** Permutations
-  reverse, backpermute, unsafeBackpermute,
+  reverse, backpermute,
 
   -- ** Safe destructive updates
   modify,
@@ -134,7 +129,7 @@ module Data.Vector.Primitive (
   G.convert,
 
   -- ** Mutable vectors
-  freeze, thaw, copy, unsafeFreeze, unsafeThaw, unsafeCopy
+  freeze, thaw, copy
 ) where
 
 import qualified Data.Vector.Generic           as G
@@ -317,20 +312,6 @@ last :: Prim a => Vector a -> a
 {-# INLINE last #-}
 last = G.last
 
--- | /O(1)/ Unsafe indexing without bounds checking
-unsafeIndex :: Prim a => Vector a -> Int -> a
-{-# INLINE unsafeIndex #-}
-unsafeIndex = G.unsafeIndex
-
--- | /O(1)/ First element without checking if the vector is empty
-unsafeHead :: Prim a => Vector a -> a
-{-# INLINE unsafeHead #-}
-unsafeHead = G.unsafeHead
-
--- | /O(1)/ Last element without checking if the vector is empty
-unsafeLast :: Prim a => Vector a -> a
-{-# INLINE unsafeLast #-}
-unsafeLast = G.unsafeLast
 
 -- Monadic indexing
 -- ----------------
@@ -370,23 +351,6 @@ lastM :: (Prim a, Monad m) => Vector a -> m a
 {-# INLINE lastM #-}
 lastM = G.lastM
 
--- | /O(1)/ Indexing in a monad without bounds checks. See 'indexM' for an
--- explanation of why this is useful.
-unsafeIndexM :: (Prim a, Monad m) => Vector a -> Int -> m a
-{-# INLINE unsafeIndexM #-}
-unsafeIndexM = G.unsafeIndexM
-
--- | /O(1)/ First element in a monad without checking for empty vectors.
--- See 'indexM' for an explanation of why this is useful.
-unsafeHeadM :: (Prim a, Monad m) => Vector a -> m a
-{-# INLINE unsafeHeadM #-}
-unsafeHeadM = G.unsafeHeadM
-
--- | /O(1)/ Last element in a monad without checking for empty vectors.
--- See 'indexM' for an explanation of why this is useful.
-unsafeLastM :: (Prim a, Monad m) => Vector a -> m a
-{-# INLINE unsafeLastM #-}
-unsafeLastM = G.unsafeLastM
 
 -- Extracting subvectors (slicing)
 -- -------------------------------
@@ -433,38 +397,6 @@ drop = G.drop
 splitAt :: Prim a => Int -> Vector a -> (Vector a, Vector a)
 splitAt = G.splitAt
 
--- | /O(1)/ Yield a slice of the vector without copying. The vector must
--- contain at least @i+n@ elements but this is not checked.
-unsafeSlice :: Prim a => Int   -- ^ @i@ starting index
-                       -> Int   -- ^ @n@ length
-                       -> Vector a
-                       -> Vector a
-{-# INLINE unsafeSlice #-}
-unsafeSlice = G.unsafeSlice
-
--- | /O(1)/ Yield all but the last element without copying. The vector may not
--- be empty but this is not checked.
-unsafeInit :: Prim a => Vector a -> Vector a
-{-# INLINE unsafeInit #-}
-unsafeInit = G.unsafeInit
-
--- | /O(1)/ Yield all but the first element without copying. The vector may not
--- be empty but this is not checked.
-unsafeTail :: Prim a => Vector a -> Vector a
-{-# INLINE unsafeTail #-}
-unsafeTail = G.unsafeTail
-
--- | /O(1)/ Yield the first @n@ elements without copying. The vector must
--- contain at least @n@ elements but this is not checked.
-unsafeTake :: Prim a => Int -> Vector a -> Vector a
-{-# INLINE unsafeTake #-}
-unsafeTake = G.unsafeTake
-
--- | /O(1)/ Yield all but the first @n@ elements without copying. The vector
--- must contain at least @n@ elements but this is not checked.
-unsafeDrop :: Prim a => Int -> Vector a -> Vector a
-{-# INLINE unsafeDrop #-}
-unsafeDrop = G.unsafeDrop
 
 -- Initialisation
 -- --------------
@@ -691,15 +623,6 @@ update_ :: Prim a
 {-# INLINE update_ #-}
 update_ = G.update_
 
--- | Same as ('//') but without bounds checking.
-unsafeUpd :: Prim a => Vector a -> [(Int, a)] -> Vector a
-{-# INLINE unsafeUpd #-}
-unsafeUpd = G.unsafeUpd
-
--- | Same as 'update_' but without bounds checking.
-unsafeUpdate_ :: Prim a => Vector a -> Vector Int -> Vector a -> Vector a
-{-# INLINE unsafeUpdate_ #-}
-unsafeUpdate_ = G.unsafeUpdate_
 
 -- Accumulations
 -- -------------
@@ -732,16 +655,6 @@ accumulate_ :: (Prim a, Prim b)
 {-# INLINE accumulate_ #-}
 accumulate_ = G.accumulate_
 
--- | Same as 'accum' but without bounds checking.
-unsafeAccum :: Prim a => (a -> b -> a) -> Vector a -> [(Int,b)] -> Vector a
-{-# INLINE unsafeAccum #-}
-unsafeAccum = G.unsafeAccum
-
--- | Same as 'accumulate_' but without bounds checking.
-unsafeAccumulate_ :: (Prim a, Prim b) =>
-               (a -> b -> a) -> Vector a -> Vector Int -> Vector b -> Vector a
-{-# INLINE unsafeAccumulate_ #-}
-unsafeAccumulate_ = G.unsafeAccumulate_
 
 -- Permutations
 -- ------------
@@ -760,10 +673,6 @@ backpermute :: Prim a => Vector a -> Vector Int -> Vector a
 {-# INLINE backpermute #-}
 backpermute = G.backpermute
 
--- | Same as 'backpermute' but without bounds checking.
-unsafeBackpermute :: Prim a => Vector a -> Vector Int -> Vector a
-{-# INLINE unsafeBackpermute #-}
-unsafeBackpermute = G.unsafeBackpermute
 
 -- Safe destructive updates
 -- ------------------------
@@ -1357,17 +1266,6 @@ fromListN = G.fromListN
 -- Conversions - Mutable vectors
 -- -----------------------------
 
--- | /O(1)/ Unsafe convert a mutable vector to an immutable one without
--- copying. The mutable vector may not be used after this operation.
-unsafeFreeze :: (Prim a, PrimMonad m) => MVector (PrimState m) a -> m (Vector a)
-{-# INLINE unsafeFreeze #-}
-unsafeFreeze = G.unsafeFreeze
-
--- | /O(1)/ Unsafely convert an immutable vector to a mutable one without
--- copying. The immutable vector may not be used after this operation.
-unsafeThaw :: (Prim a, PrimMonad m) => Vector a -> m (MVector (PrimState m) a)
-{-# INLINE unsafeThaw #-}
-unsafeThaw = G.unsafeThaw
 
 -- | /O(n)/ Yield a mutable copy of the immutable vector.
 thaw :: (Prim a, PrimMonad m) => Vector a -> m (MVector (PrimState m) a)
@@ -1379,12 +1277,6 @@ freeze :: (Prim a, PrimMonad m) => MVector (PrimState m) a -> m (Vector a)
 {-# INLINE freeze #-}
 freeze = G.freeze
 
--- | /O(n)/ Copy an immutable vector into a mutable one. The two vectors must
--- have the same length. This is not checked.
-unsafeCopy
-  :: (Prim a, PrimMonad m) => MVector (PrimState m) a -> Vector a -> m ()
-{-# INLINE unsafeCopy #-}
-unsafeCopy = G.unsafeCopy
 
 -- | /O(n)/ Copy an immutable vector into a mutable one. The two vectors must
 -- have the same length.
